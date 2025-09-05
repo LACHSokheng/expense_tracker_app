@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:uuid/uuid.dart'; // Add uuid package to pubspec.yaml
+import 'package:uuid/uuid.dart';
 import 'package:expense_tracker_app/app/data/models/expense_model.dart';
 import 'package:expense_tracker_app/app/data/services/local_storage_service.dart';
+import 'package:expense_tracker_app/app/core/utils/category_data.dart'; // Import the new utility
 
 class AddExpenseController extends GetxController {
   final LocalStorageService _localStorageService =
@@ -12,20 +13,14 @@ class AddExpenseController extends GetxController {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
 
-  final RxString selectedCategory = 'Food'.obs; // Default category
+  // Initialize with the first category from our list
+  final RxString selectedCategory = CategoryData.allCategories.first.name.obs;
   final Rx<DateTime> selectedDate = DateTime.now().obs;
 
-  final List<String> categories = [
-    'Food',
-    'Transport',
-    'Entertainment',
-    'Shopping',
-    'Utilities',
-    'Health',
-    'Education',
-    'Salary', // For income if you want to track it
-    'Others',
-  ];
+  // Use the list from CategoryData
+  final List<String> categories = CategoryData.allCategories
+      .map((e) => e.name)
+      .toList();
 
   @override
   void onClose() {
@@ -46,6 +41,23 @@ class AddExpenseController extends GetxController {
       initialDate: selectedDate.value,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Get.theme.copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Get.theme.primaryColor, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Get.theme.primaryColor, // Button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != selectedDate.value) {
       selectedDate.value = picked;
@@ -55,7 +67,7 @@ class AddExpenseController extends GetxController {
   Future<void> saveExpense() async {
     if (formKey.currentState!.validate()) {
       final newExpense = Expense(
-        id: const Uuid().v4(), // Generate a unique ID
+        id: const Uuid().v4(),
         amount: double.parse(amountController.text),
         category: selectedCategory.value,
         date: selectedDate.value,
@@ -63,7 +75,7 @@ class AddExpenseController extends GetxController {
       );
 
       await _localStorageService.addExpense(newExpense);
-      Get.back(); // Go back to the home screen
+      Get.back();
       Get.snackbar(
         'Success',
         'Expense added successfully!',

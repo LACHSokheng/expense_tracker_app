@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart'; // Import for AlertDialog
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracker_app/app/data/models/expense_model.dart';
@@ -76,9 +77,32 @@ class HomeController extends GetxController {
     _loadExpenses(); // Reload expenses after adding a new one
   }
 
-  Future<void> deleteExpense(String id) async {
-    await _localStorageService.deleteExpense(id);
-    _loadExpenses(); // Reload expenses after deleting
+  // --- MODIFIED DELETE EXPENSE ---
+  void confirmAndDeleteExpense(String id) {
+    Get.defaultDialog(
+      title: "Delete Expense",
+      middleText: "Are you sure you want to delete this expense?",
+      textConfirm: "Delete",
+      textCancel: "Cancel",
+      confirmTextColor: Colors.white,
+      cancelTextColor: Get.theme.primaryColor,
+      buttonColor: Colors.redAccent,
+      onConfirm: () async {
+        Get.back(); // Close the dialog
+        await _localStorageService.deleteExpense(id);
+        _loadExpenses(); // Reload expenses after deleting
+        Get.snackbar(
+          'Deleted!',
+          'Expense removed successfully.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+      },
+      onCancel: () {
+        // Do nothing, dialog will just close
+      },
+    );
   }
 
   // Group expenses by day for the grid view

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controllers/add_expense_controller.dart';
+import 'package:expense_tracker_app/app/core/utils/category_data.dart'; // Import the new utility
 
 class AddExpenseView extends GetView<AddExpenseController> {
   const AddExpenseView({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class AddExpenseView extends GetView<AddExpenseController> {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: 'Amount',
-                  prefixText: '៛',
+                  prefixText: '៛', // Updated currency symbol
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -42,11 +43,20 @@ class AddExpenseView extends GetView<AddExpenseController> {
                 () => DropdownButtonFormField<String>(
                   value: controller.selectedCategory.value,
                   decoration: const InputDecoration(labelText: 'Category'),
-                  items: controller.categories
+                  items: CategoryData.allCategories
                       .map(
-                        (category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
+                        (categoryData) => DropdownMenuItem(
+                          value: categoryData.name,
+                          child: Row(
+                            children: [
+                              Icon(
+                                categoryData.icon,
+                                color: categoryData.color,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(categoryData.name),
+                            ],
+                          ),
                         ),
                       )
                       .toList(),

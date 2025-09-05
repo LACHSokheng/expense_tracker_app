@@ -43,7 +43,7 @@ class DailyExpenseGrid extends StatelessWidget {
                     style: Get.textTheme.headlineSmall,
                   ),
                   Text(
-                    'Daily: ₹${dailyTotal.toStringAsFixed(2)}',
+                    'Daily: ៛${dailyTotal.toStringAsFixed(2)}', // Updated currency
                     style: Get.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.deepPurple,
@@ -55,7 +55,8 @@ class DailyExpenseGrid extends StatelessWidget {
             ...expenses.map(
               (expense) => ExpenseCard(
                 expense: expense,
-                onDelete: () => onDelete(expense.id),
+                onDeleteConfirmed: () =>
+                    onDelete(expense.id), // Corrected callback
               ),
             ),
             const Divider(), // Separator between days
