@@ -28,7 +28,7 @@ class HomeView extends GetView<HomeController> {
               }
               return DailyExpenseGrid(
                 groupedExpenses: controller.groupedExpensesByDay,
-                onDelete: controller.deleteExpense,
+                onDelete: controller.confirmAndDeleteExpense,
               );
             }),
           ),
